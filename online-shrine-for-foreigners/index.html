@@ -1,0 +1,229 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Online Shrine for Foreigners</title>
+    <style>
+      :root {
+        --bg: #fff9f0;
+        --ink: #2b1d0e;
+        --accent: #d04a02;
+        --card: #ffffff;
+        --line: #e7d9c6;
+      }
+
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        font-family: "Noto Sans", Arial, sans-serif;
+        background: linear-gradient(180deg, #fffef9, var(--bg));
+        color: var(--ink);
+      }
+
+      header {
+        padding: 2rem 1rem 1rem;
+        text-align: center;
+      }
+
+      h1 {
+        margin: 0 0 0.5rem;
+        font-size: clamp(1.5rem, 4vw, 2.4rem);
+      }
+
+      .lead {
+        max-width: 700px;
+        margin: 0 auto;
+        color: #5d4a35;
+      }
+
+      main {
+        max-width: 900px;
+        margin: 1rem auto 3rem;
+        padding: 0 1rem;
+        display: grid;
+        gap: 1rem;
+      }
+
+      .card {
+        background: var(--card);
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 1rem;
+        box-shadow: 0 6px 20px rgba(30, 20, 10, 0.06);
+      }
+
+      label {
+        display: block;
+        font-weight: 700;
+        margin-bottom: 0.4rem;
+      }
+
+      input, select, textarea, button {
+        width: 100%;
+        padding: 0.65rem 0.75rem;
+        border-radius: 8px;
+        border: 1px solid #cdb89e;
+        font: inherit;
+      }
+
+      textarea { min-height: 110px; resize: vertical; }
+
+      .row {
+        display: grid;
+        gap: 0.8rem;
+      }
+
+      @media (min-width: 680px) {
+        .row.two { grid-template-columns: 1fr 1fr; }
+      }
+
+      button {
+        background: var(--accent);
+        color: white;
+        border: none;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      button:hover { filter: brightness(1.05); }
+
+      .prayer {
+        padding: 0.8rem;
+        border: 1px solid var(--line);
+        border-radius: 8px;
+        margin-top: 0.7rem;
+        background: #fffcf8;
+      }
+
+      .muted {
+        color: #735f48;
+        font-size: 0.9rem;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <h1>⛩ Online Shrine for Foreigners</h1>
+      <p class="lead">A simple bilingual-friendly place where visitors can leave a prayer message and receive a polite omikuji fortune.</p>
+    </header>
+
+    <main>
+      <section class="card">
+        <h2>Leave your prayer</h2>
+        <div class="row two">
+          <div>
+            <label for="name">Name</label>
+            <input id="name" placeholder="e.g. Alex" />
+          </div>
+          <div>
+            <label for="country">Country</label>
+            <input id="country" placeholder="e.g. Canada" />
+          </div>
+        </div>
+
+        <div class="row two" style="margin-top: 0.8rem;">
+          <div>
+            <label for="language">Language</label>
+            <select id="language">
+              <option>English</option>
+              <option>日本語</option>
+              <option>Español</option>
+              <option>Français</option>
+            </select>
+          </div>
+          <div>
+            <label for="wishType">Wish type</label>
+            <select id="wishType">
+              <option>Health</option>
+              <option>Love</option>
+              <option>Career</option>
+              <option>Study</option>
+              <option>Travel safety</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="margin-top: 0.8rem;">
+          <label for="message">Prayer message</label>
+          <textarea id="message" placeholder="Write your prayer here..."></textarea>
+        </div>
+
+        <div style="margin-top: 1rem;">
+          <button id="submitPrayer">Offer Prayer</button>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>Draw omikuji</h2>
+        <p class="muted">Click to receive a random fortune.</p>
+        <button id="drawOmikuji">Draw Fortune</button>
+        <div id="fortune" class="prayer" style="display:none;"></div>
+      </section>
+
+      <section class="card">
+        <h2>Recent prayers</h2>
+        <p class="muted">Saved in your browser only (localStorage).</p>
+        <div id="prayerList"></div>
+      </section>
+    </main>
+
+    <script>
+      const prayerList = document.getElementById('prayerList');
+      const storageKey = 'onlineShrinePrayers';
+
+      const fortunes = [
+        'Great Blessing (大吉): A favorable wind is on your side.',
+        'Blessing (吉): Quiet effort will bring good outcomes soon.',
+        'Half Blessing (中吉): Progress is steady. Keep your rhythm.',
+        'Small Blessing (小吉): Be patient and kind; luck will open.',
+        'Future Blessing (末吉): Your best result comes with persistence.'
+      ];
+
+      function loadPrayers() {
+        const data = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        prayerList.innerHTML = data.length
+          ? data.map((p) => `\n            <article class="prayer">\n              <strong>${escapeHtml(p.name || 'Anonymous')}</strong> (${escapeHtml(p.country || 'Unknown')})\n              <div class="muted">${escapeHtml(p.language)} / ${escapeHtml(p.wishType)}</div>\n              <p>${escapeHtml(p.message)}</p>\n            </article>\n          `).join('')
+          : '<p class="muted">No prayers yet.</p>';
+      }
+
+      function escapeHtml(value) {
+        return value
+          .replaceAll('&', '&amp;')
+          .replaceAll('<', '&lt;')
+          .replaceAll('>', '&gt;')
+          .replaceAll('"', '&quot;')
+          .replaceAll("'", '&#039;');
+      }
+
+      document.getElementById('submitPrayer').addEventListener('click', () => {
+        const name = document.getElementById('name').value.trim();
+        const country = document.getElementById('country').value.trim();
+        const language = document.getElementById('language').value;
+        const wishType = document.getElementById('wishType').value;
+        const message = document.getElementById('message').value.trim();
+
+        if (!message) {
+          alert('Please write a prayer message.');
+          return;
+        }
+
+        const data = JSON.parse(localStorage.getItem(storageKey) || '[]');
+        data.unshift({ name, country, language, wishType, message });
+        localStorage.setItem(storageKey, JSON.stringify(data.slice(0, 20)));
+
+        document.getElementById('message').value = '';
+        loadPrayers();
+      });
+
+      document.getElementById('drawOmikuji').addEventListener('click', () => {
+        const result = fortunes[Math.floor(Math.random() * fortunes.length)];
+        const fortuneBox = document.getElementById('fortune');
+        fortuneBox.style.display = 'block';
+        fortuneBox.textContent = result;
+      });
+
+      loadPrayers();
+    </script>
+  </body>
+</html>
