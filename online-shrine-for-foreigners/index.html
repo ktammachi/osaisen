@@ -2,228 +2,465 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Online Shrine for Foreigners</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <title>Foreigners Online Shrine</title>
     <style>
       :root {
-        --bg: #fff9f0;
-        --ink: #2b1d0e;
-        --accent: #d04a02;
-        --card: #ffffff;
-        --line: #e7d9c6;
+        --sky-top: #e7f2ff;
+        --sky-bottom: #fff8ee;
+        --torii: #c73a2f;
+        --torii-dark: #8f241c;
+        --wood: #6f401f;
+        --gold: #d3a23a;
+        --ink: #261709;
+        --paper: #fffbf3;
+        --accent: #b53a15;
       }
 
-      * { box-sizing: border-box; }
+      * {
+        box-sizing: border-box;
+        -webkit-tap-highlight-color: transparent;
+      }
+
+      html,
       body {
         margin: 0;
-        font-family: "Noto Sans", Arial, sans-serif;
-        background: linear-gradient(180deg, #fffef9, var(--bg));
+        min-height: 100%;
+        font-family: "Noto Sans JP", "Hiragino Kaku Gothic ProN", system-ui, -apple-system, sans-serif;
         color: var(--ink);
+        background: linear-gradient(180deg, var(--sky-top), var(--sky-bottom));
       }
 
-      header {
-        padding: 2rem 1rem 1rem;
+      .app {
+        min-height: 100vh;
+        display: grid;
+        grid-template-rows: 1fr auto;
+      }
+
+      .shrine-stage {
+        position: relative;
+        overflow: hidden;
+        min-height: 64vh;
+        isolation: isolate;
+        background:
+          radial-gradient(1100px 330px at 50% 100%, #b6d793 0%, #8fb371 45%, transparent 65%),
+          linear-gradient(180deg, transparent 0 55%, #c8d9a8 55% 100%);
+      }
+
+      .title {
+        position: absolute;
+        inset: 1rem 0 auto;
+        text-align: center;
+        z-index: 10;
+        padding: 0 1rem;
+      }
+
+      .title h1 {
+        margin: 0;
+        font-size: clamp(1.25rem, 4.4vw, 2rem);
+      }
+
+      .title p {
+        margin: 0.3rem 0 0;
+        font-size: clamp(0.84rem, 2.6vw, 1rem);
+        opacity: 0.9;
+      }
+
+      .torii {
+        position: absolute;
+        left: 50%;
+        bottom: 15vh;
+        width: min(95vw, 860px);
+        height: min(70vh, 520px);
+        transform: translateX(-50%);
+      }
+
+      .beam-top,
+      .beam-main,
+      .plank,
+      .pillar {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(180deg, #de5145, var(--torii));
+        border: 2px solid var(--torii-dark);
+        border-radius: 10px;
+      }
+
+      .beam-top {
+        top: 10%;
+        width: 100%;
+        height: 10%;
+        z-index: 4;
+      }
+
+      .beam-main {
+        top: 21%;
+        width: 90%;
+        height: 10%;
+        z-index: 4;
+      }
+
+      .plank {
+        top: 32%;
+        width: 25%;
+        height: 8%;
+        border-radius: 5px;
+        z-index: 5;
+      }
+
+      .pillar {
+        bottom: 0;
+        width: 14%;
+        height: 73%;
+        z-index: 6;
+      }
+
+      .pillar.left { left: 19%; transform: none; }
+      .pillar.right { left: auto; right: 19%; transform: none; }
+
+      .pillar::before {
+        content: "";
+        position: absolute;
+        left: -12%;
+        right: -12%;
+        bottom: -4%;
+        height: 12%;
+        border-radius: 12px;
+        border: 2px solid var(--torii-dark);
+        background: linear-gradient(180deg, #aa3025, #7a1e18);
+      }
+
+      .rope-wrap {
+        position: absolute;
+        left: 50%;
+        top: 31%;
+        width: 54%;
+        height: 56%;
+        transform: translateX(-50%);
+        z-index: 2;
+        transform-origin: 50% 8%;
+      }
+
+      .rope {
+        position: absolute;
+        left: 50%;
+        top: 0;
+        width: 10%;
+        height: 68%;
+        transform: translateX(-50%);
+        border-radius: 999px;
+        background: repeating-linear-gradient(
+          45deg,
+          #f6e2ae 0 8px,
+          #d6ba7c 8px 16px
+        );
+        border: 2px solid #b28d4e;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+      }
+
+      .rope-knot {
+        position: absolute;
+        left: 50%;
+        top: 62%;
+        width: 20%;
+        height: 10%;
+        transform: translateX(-50%);
+        border-radius: 999px;
+        border: 2px solid #b28d4e;
+        background: repeating-linear-gradient(45deg, #f8e3aa 0 7px, #d5b77a 7px 14px);
+      }
+
+      .bell {
+        position: absolute;
+        left: 50%;
+        top: 66%;
+        width: 24%;
+        height: 20%;
+        transform: translateX(-50%);
+        border-radius: 30% 30% 36% 36%;
+        border: 3px solid #8b6b22;
+        background: linear-gradient(180deg, #f4cd62 0%, #c28f23 80%);
+        box-shadow: inset 0 -8px 0 rgba(80, 47, 8, 0.22);
+      }
+
+      .bell::before {
+        content: "";
+        position: absolute;
+        left: 18%;
+        right: 18%;
+        top: 26%;
+        height: 14%;
+        border-radius: 999px;
+        background: rgba(85, 47, 9, 0.25);
+      }
+
+      .rope-end-hidden {
+        position: absolute;
+        top: 29.6%;
+        width: 11%;
+        height: 9%;
+        background: linear-gradient(180deg, #a62f24, #8b241c);
+        z-index: 8;
+      }
+
+      .rope-end-hidden.left { left: 17.8%; }
+      .rope-end-hidden.right { right: 17.8%; }
+
+      .offering-box {
+        position: absolute;
+        left: 50%;
+        bottom: 4%;
+        width: min(86vw, 480px);
+        transform: translateX(-50%);
+        border: 3px solid #4f2f13;
+        background: linear-gradient(180deg, #8d5528, #5f3618);
+        color: #fff6eb;
+        border-radius: 10px;
+        z-index: 9;
+        box-shadow: 0 14px 25px rgba(20, 10, 4, 0.22);
+      }
+
+      .offering-box p {
+        margin: 0;
+        padding: 0.7rem;
+        text-align: center;
+        font-weight: 700;
+        letter-spacing: 0.04em;
+      }
+
+      .controls {
+        background: var(--paper);
+        border-top: 1px solid #ead8be;
+        padding: 0.9rem;
+        display: grid;
+        gap: 0.7rem;
+      }
+
+      .status {
+        margin: 0;
+        font-size: 0.96rem;
         text-align: center;
       }
 
-      h1 {
-        margin: 0 0 0.5rem;
-        font-size: clamp(1.5rem, 4vw, 2.4rem);
-      }
-
-      .lead {
-        max-width: 700px;
-        margin: 0 auto;
-        color: #5d4a35;
-      }
-
-      main {
-        max-width: 900px;
-        margin: 1rem auto 3rem;
-        padding: 0 1rem;
-        display: grid;
-        gap: 1rem;
-      }
-
-      .card {
-        background: var(--card);
-        border: 1px solid var(--line);
-        border-radius: 12px;
-        padding: 1rem;
-        box-shadow: 0 6px 20px rgba(30, 20, 10, 0.06);
-      }
-
-      label {
-        display: block;
-        font-weight: 700;
-        margin-bottom: 0.4rem;
-      }
-
-      input, select, textarea, button {
-        width: 100%;
-        padding: 0.65rem 0.75rem;
-        border-radius: 8px;
-        border: 1px solid #cdb89e;
-        font: inherit;
-      }
-
-      textarea { min-height: 110px; resize: vertical; }
-
-      .row {
-        display: grid;
-        gap: 0.8rem;
-      }
-
-      @media (min-width: 680px) {
-        .row.two { grid-template-columns: 1fr 1fr; }
-      }
-
-      button {
-        background: var(--accent);
-        color: white;
+      .btn {
         border: none;
+        border-radius: 12px;
+        padding: 0.92rem 1rem;
+        font-size: 1rem;
         font-weight: 700;
-        cursor: pointer;
       }
 
-      button:hover { filter: brightness(1.05); }
-
-      .prayer {
-        padding: 0.8rem;
-        border: 1px solid var(--line);
-        border-radius: 8px;
-        margin-top: 0.7rem;
-        background: #fffcf8;
+      .btn.primary {
+        background: linear-gradient(180deg, #d84f26, var(--accent));
+        color: #fff;
       }
 
-      .muted {
-        color: #735f48;
-        font-size: 0.9rem;
+      .btn.secondary {
+        background: #f3e6d2;
+        color: #533116;
+      }
+
+      .fortune-card {
+        border-radius: 12px;
+        background: #fff;
+        border: 1px solid #ead8be;
+        padding: 0.85rem;
+        font-size: 0.95rem;
+        min-height: 3.1rem;
+      }
+
+      .hidden { display: none; }
+
+      .shake {
+        animation: bell-shake 900ms cubic-bezier(0.2, 0.85, 0.35, 1) 1;
+      }
+
+      .flash {
+        animation: flash 850ms ease-out 1;
+      }
+
+      @keyframes bell-shake {
+        0% { transform: translateX(-50%) rotate(0deg); }
+        15% { transform: translateX(-50%) rotate(-9deg); }
+        30% { transform: translateX(-50%) rotate(8deg); }
+        45% { transform: translateX(-50%) rotate(-6deg); }
+        60% { transform: translateX(-50%) rotate(5deg); }
+        75% { transform: translateX(-50%) rotate(-3deg); }
+        100% { transform: translateX(-50%) rotate(0deg); }
+      }
+
+      @keyframes flash {
+        0% { box-shadow: 0 0 0 rgba(255, 245, 170, 0); }
+        35% { box-shadow: 0 0 50px rgba(255, 245, 170, 0.95); }
+        100% { box-shadow: 0 0 0 rgba(255, 245, 170, 0); }
+      }
+
+      .flow {
+        border-radius: 12px;
+        background: #fff;
+        border: 1px solid #ead8be;
+        padding: 0.7rem;
+        font-size: 0.88rem;
+      }
+
+      @media (min-width: 960px) {
+        .app {
+          grid-template-rows: none;
+          grid-template-columns: 1.35fr 0.9fr;
+        }
+
+        .shrine-stage { min-height: 100vh; }
+
+        .controls {
+          border-top: none;
+          border-left: 1px solid #ead8be;
+          align-content: center;
+          padding: 1.2rem;
+        }
       }
     </style>
   </head>
   <body>
-    <header>
-      <h1>⛩ Online Shrine for Foreigners</h1>
-      <p class="lead">A simple bilingual-friendly place where visitors can leave a prayer message and receive a polite omikuji fortune.</p>
-    </header>
-
-    <main>
-      <section class="card">
-        <h2>Leave your prayer</h2>
-        <div class="row two">
-          <div>
-            <label for="name">Name</label>
-            <input id="name" placeholder="e.g. Alex" />
-          </div>
-          <div>
-            <label for="country">Country</label>
-            <input id="country" placeholder="e.g. Canada" />
-          </div>
+    <main class="app">
+      <section class="shrine-stage" aria-label="Shrine visual stage">
+        <div class="title">
+          <h1>⛩️ Foreigners Online Shrine</h1>
+          <p>Tap the bell rope to shake, hear a bell sound, and draw your omikuji.</p>
         </div>
 
-        <div class="row two" style="margin-top: 0.8rem;">
-          <div>
-            <label for="language">Language</label>
-            <select id="language">
-              <option>English</option>
-              <option>日本語</option>
-              <option>Español</option>
-              <option>Français</option>
-            </select>
+        <div class="torii" id="torii">
+          <div class="beam-top"></div>
+          <div class="beam-main"></div>
+          <div class="plank"></div>
+          <div class="rope-wrap" id="ropeWrap" role="button" tabindex="0" aria-label="Shake bell rope">
+            <div class="rope"></div>
+            <div class="rope-knot"></div>
+            <div class="bell" id="bell"></div>
           </div>
-          <div>
-            <label for="wishType">Wish type</label>
-            <select id="wishType">
-              <option>Health</option>
-              <option>Love</option>
-              <option>Career</option>
-              <option>Study</option>
-              <option>Travel safety</option>
-            </select>
-          </div>
+          <div class="pillar left"></div>
+          <div class="pillar right"></div>
+          <div class="rope-end-hidden left"></div>
+          <div class="rope-end-hidden right"></div>
         </div>
 
-        <div style="margin-top: 0.8rem;">
-          <label for="message">Prayer message</label>
-          <textarea id="message" placeholder="Write your prayer here..."></textarea>
-        </div>
-
-        <div style="margin-top: 1rem;">
-          <button id="submitPrayer">Offer Prayer</button>
+        <div class="offering-box">
+          <p>賽銭箱 / Saisen Box</p>
         </div>
       </section>
 
-      <section class="card">
-        <h2>Draw omikuji</h2>
-        <p class="muted">Click to receive a random fortune.</p>
-        <button id="drawOmikuji">Draw Fortune</button>
-        <div id="fortune" class="prayer" style="display:none;"></div>
-      </section>
+      <section class="controls">
+        <p class="status" id="statusText">Step 1: Opened shrine. Step 2: Tap rope to pray & draw omikuji.</p>
+        <button class="btn primary" id="shakeBtn">鈴を振る / Shake Bell</button>
+        <div class="fortune-card" id="fortuneCard">Omikuji result will appear here.</div>
 
-      <section class="card">
-        <h2>Recent prayers</h2>
-        <p class="muted">Saved in your browser only (localStorage).</p>
-        <div id="prayerList"></div>
+        <div class="flow" id="flowCard">
+          Step 3: After omikuji, choose donation or ad support.
+        </div>
+
+        <div id="postOmikuji" class="hidden">
+          <button class="btn secondary" id="showDonation">お賽銭を納める / Donate</button>
+          <button class="btn secondary" id="showAd">広告をみる / Watch Ad</button>
+        </div>
+
+        <div id="donationBlock" class="hidden">
+          <script
+            src="https://www.paypal.com/sdk/js?client-id=BAAXqFfjur3Vp0f2o2MTPLpL1xEwJT_FmoCCVnGkJwSYMHcSE-NOHYpAxeJu6F_MxmKt7QNG4tGu0Kj3dc&components=hosted-buttons&disable-funding=venmo&currency=USD">
+          </script>
+          <div id="paypal-container-KLMAD2Z428G2Y"></div>
+        </div>
+
+        <div id="adBlock" class="flow hidden">
+          <strong>Sponsored Message</strong>
+          <p>This is where your ad SDK/video can be shown before revealing a premium fortune.</p>
+        </div>
       </section>
     </main>
 
     <script>
-      const prayerList = document.getElementById('prayerList');
-      const storageKey = 'onlineShrinePrayers';
-
       const fortunes = [
-        'Great Blessing (大吉): A favorable wind is on your side.',
-        'Blessing (吉): Quiet effort will bring good outcomes soon.',
-        'Half Blessing (中吉): Progress is steady. Keep your rhythm.',
-        'Small Blessing (小吉): Be patient and kind; luck will open.',
-        'Future Blessing (末吉): Your best result comes with persistence.'
+        '大吉 / Great Blessing: Your new path abroad opens with strong support.',
+        '中吉 / Middle Blessing: Small daily progress brings stable luck.',
+        '小吉 / Small Blessing: Be kind in language and culture, blessings follow.',
+        '吉 / Blessing: A meaningful encounter will guide your next decision.',
+        '末吉 / Future Blessing: Patience today becomes success tomorrow.'
       ];
 
-      function loadPrayers() {
-        const data = JSON.parse(localStorage.getItem(storageKey) || '[]');
-        prayerList.innerHTML = data.length
-          ? data.map((p) => `\n            <article class="prayer">\n              <strong>${escapeHtml(p.name || 'Anonymous')}</strong> (${escapeHtml(p.country || 'Unknown')})\n              <div class="muted">${escapeHtml(p.language)} / ${escapeHtml(p.wishType)}</div>\n              <p>${escapeHtml(p.message)}</p>\n            </article>\n          `).join('')
-          : '<p class="muted">No prayers yet.</p>';
+      const ropeWrap = document.getElementById('ropeWrap');
+      const torii = document.getElementById('torii');
+      const fortuneCard = document.getElementById('fortuneCard');
+      const statusText = document.getElementById('statusText');
+      const postOmikuji = document.getElementById('postOmikuji');
+      const donationBlock = document.getElementById('donationBlock');
+      const adBlock = document.getElementById('adBlock');
+
+      let hasDrawn = false;
+      let audioCtx;
+
+      function ringBellSound() {
+        audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+        const now = audioCtx.currentTime;
+
+        const o1 = audioCtx.createOscillator();
+        const g1 = audioCtx.createGain();
+        o1.type = 'sine';
+        o1.frequency.setValueAtTime(880, now);
+        o1.frequency.exponentialRampToValueAtTime(350, now + 1.1);
+        g1.gain.setValueAtTime(0.0001, now);
+        g1.gain.exponentialRampToValueAtTime(0.24, now + 0.02);
+        g1.gain.exponentialRampToValueAtTime(0.0001, now + 1.15);
+        o1.connect(g1).connect(audioCtx.destination);
+        o1.start(now);
+        o1.stop(now + 1.2);
       }
 
-      function escapeHtml(value) {
-        return value
-          .replaceAll('&', '&amp;')
-          .replaceAll('<', '&lt;')
-          .replaceAll('>', '&gt;')
-          .replaceAll('"', '&quot;')
-          .replaceAll("'", '&#039;');
-      }
-
-      document.getElementById('submitPrayer').addEventListener('click', () => {
-        const name = document.getElementById('name').value.trim();
-        const country = document.getElementById('country').value.trim();
-        const language = document.getElementById('language').value;
-        const wishType = document.getElementById('wishType').value;
-        const message = document.getElementById('message').value.trim();
-
-        if (!message) {
-          alert('Please write a prayer message.');
-          return;
-        }
-
-        const data = JSON.parse(localStorage.getItem(storageKey) || '[]');
-        data.unshift({ name, country, language, wishType, message });
-        localStorage.setItem(storageKey, JSON.stringify(data.slice(0, 20)));
-
-        document.getElementById('message').value = '';
-        loadPrayers();
-      });
-
-      document.getElementById('drawOmikuji').addEventListener('click', () => {
+      function drawOmikuji() {
         const result = fortunes[Math.floor(Math.random() * fortunes.length)];
-        const fortuneBox = document.getElementById('fortune');
-        fortuneBox.style.display = 'block';
-        fortuneBox.textContent = result;
+        fortuneCard.textContent = result;
+        statusText.textContent = 'Step 3: Choose donation or ad support after your fortune.';
+        postOmikuji.classList.remove('hidden');
+        hasDrawn = true;
+      }
+
+      function shakeAndDraw() {
+        ropeWrap.classList.remove('shake');
+        torii.classList.remove('flash');
+        void ropeWrap.offsetWidth;
+        ropeWrap.classList.add('shake');
+        torii.classList.add('flash');
+        ringBellSound();
+        setTimeout(drawOmikuji, 780);
+      }
+
+      ropeWrap.addEventListener('click', shakeAndDraw);
+      document.getElementById('shakeBtn').addEventListener('click', shakeAndDraw);
+      ropeWrap.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          shakeAndDraw();
+        }
       });
 
-      loadPrayers();
+      document.getElementById('showDonation').addEventListener('click', () => {
+        if (!hasDrawn) return;
+        donationBlock.classList.remove('hidden');
+        adBlock.classList.add('hidden');
+        statusText.textContent = 'Donation selected. You can proceed via PayPal button.';
+        if (window.paypal && window.paypal.HostedButtons) {
+          const container = document.getElementById('paypal-container-KLMAD2Z428G2Y');
+          if (!container.dataset.rendered) {
+            window.paypal.HostedButtons({ hostedButtonId: 'KLMAD2Z428G2Y' }).render('#paypal-container-KLMAD2Z428G2Y');
+            container.dataset.rendered = 'true';
+          }
+        }
+      });
+
+      document.getElementById('showAd').addEventListener('click', () => {
+        if (!hasDrawn) return;
+        adBlock.classList.remove('hidden');
+        donationBlock.classList.add('hidden');
+        statusText.textContent = 'Ad flow selected. Replace this section with your ad network SDK.';
+      });
     </script>
   </body>
 </html>
