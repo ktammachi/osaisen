@@ -17,3 +17,6 @@ After deployment, the app is available at:
 - `https://<your-github-username>.github.io/<repo-name>/`
 
 (For project pages, the path maps to `online-shrine-for-foreigners/index.html` as site root because the workflow uploads that folder directly.)
+
+## Screenshot check
+For UI review, capture a mobile viewport screenshot after running the app locally (e.g. `python3 -m http.server 8000`) and opening `/online-shrine-for-foreigners/index.html`.
